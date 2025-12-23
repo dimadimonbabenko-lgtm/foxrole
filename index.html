@@ -14,8 +14,6 @@
             --accent-soft: #ffb26b;
             --text: #f5e6d3;
             --muted: #bfa98a;
-            --admin: #ff4d4d;
-            --system: #8bc34a;
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
@@ -28,36 +26,86 @@
             min-height: 100vh;
         }
 
-        /* --- ЭФФЕКТЫ: СВЕТЛЯЧКИ --- */
+        /* Обновленная анимация живых светлячков */
         .firefly {
-            position: fixed; background: var(--accent); border-radius: 50%; opacity: 0;
-            pointer-events: none; animation: fly linear infinite; z-index: 0;
+            position: fixed;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            animation: fly linear infinite;
+            z-index: 0;
             box-shadow: 0 0 10px var(--accent);
         }
+
         @keyframes fly {
-            0% { transform: translateY(110vh) translateX(0); opacity: 0; }
-            10% { opacity: 0.7; }
-            50% { transform: translateY(50vh) translateX(50px); }
-            100% { transform: translateY(-10vh) translateX(-20px); opacity: 0; }
+            0% {
+                transform: translateY(110vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(50vh) translateX(50px);
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(-20px);
+                opacity: 0;
+            }
         }
 
-        /* --- ШАПКА --- */
         header {
             background: linear-gradient(to right, #2b160b, #140a05);
-            padding: 14px 30px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 10;
+            padding: 14px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        header h1 { margin: 0; color: var(--accent); font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- ЛЕЙАУТ --- */
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 60px); }
+        header h1 { margin: 0; color: var(--accent); display: flex; align-items: center; gap: 10px; font-size: 22px; }
+        .fox-icon { width: 28px; height: 28px; fill: var(--accent); }
 
-        aside { background: linear-gradient(#140b07, #0b0503); border-right: 1px solid var(--border); padding: 20px; }
+        nav button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            margin-left: 15px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        nav button:hover { color: var(--accent); }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: calc(100vh - 60px);
+        }
+
+        aside {
+            background: linear-gradient(#140b07, #0b0503);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+        }
+
         aside button {
-            width: 100%; background: none; border: none; color: var(--muted); padding: 12px 10px;
-            text-align: left; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.3s;
-            display: flex; align-items: center; gap: 10px;
+            width: 100%;
+            background: none;
+            border: none;
+            color: var(--muted);
+            padding: 12px 10px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.3s;
         }
         aside button:hover { background: rgba(255,140,50,0.1); color: var(--accent); }
 
@@ -65,64 +113,103 @@
 
         section { display: none; animation: fade 0.4s ease forwards; }
         section.active { display: block; }
-        @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- КАРТОЧКИ И КНОПКИ --- */
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .card {
             background: linear-gradient(180deg, #28180f, #160d08);
-            border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(255,140,50,0.08);
         }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
         .btn {
             background: linear-gradient(135deg, #ff8c32, #ff6400);
-            border: none; padding: 10px 18px; border-radius: 6px;
-            font-weight: bold; cursor: pointer; color: #1a0d06;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1a0d06;
+            transition: 0.2s;
         }
-        .btn-secondary { background: #3a2417; color: var(--text); border: 1px solid var(--border); padding: 10px 15px; border-radius: 6px; cursor: pointer; }
+        .btn:hover { transform: scale(1.02); opacity: 0.9; }
 
-        /* МИНИМАЛИСТИЧНАЯ КНОПКА УДАЛЕНИЯ */
-        .btn-admin {
-            background: transparent; color: var(--muted); border: 1px solid var(--border);
-            padding: 0px 5px; border-radius: 4px; font-size: 12px; cursor: pointer;
-            margin-left: 10px; transition: 0.3s; opacity: 0.4; line-height: 1;
+        .btn-secondary {
+            background: #3a2417;
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
         }
-        .btn-admin:hover { opacity: 1; color: var(--admin); border-color: var(--admin); background: rgba(255, 77, 77, 0.05); }
 
-        /* --- ЧАТ И GM-СТИЛИ --- */
-        #chat-messages { height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border-left: 3px solid var(--border); position: relative; }
-        .msg-meta { font-size: 12px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .msg-char { color: var(--accent); font-weight: bold; }
-        
-        .msg-gm { background: linear-gradient(90deg, rgba(255, 140, 50, 0.12), transparent); border-left: 4px solid var(--accent) !important; }
-        .msg-gm .msg-text { color: var(--accent-soft); font-style: italic; font-size: 16px; }
-        .gm-label { background: var(--accent); color: #1a0d06; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; margin-right: 8px; }
+        input, textarea, select {
+            width: 100%;
+            background: #120a05;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
 
-        .msg-system { border-left-color: var(--system); color: var(--system); font-style: italic; }
-        .frozen-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center;
-            z-index: 5; color: #90caf9; font-weight: bold; border-radius: 8px;
+        label { display: block; margin-bottom: 5px; color: var(--accent-soft); font-size: 13px; font-weight: bold; }
+
+        .msg {
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--border);
+            position: relative;
+        }
+        .msg-meta { font-size: 12px; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .msg-user { color: var(--muted); font-style: italic; }
+        .msg-char { color: var(--accent); font-weight: bold; font-size: 14px; }
+        .msg-dice { 
+            background: rgba(255,140,50,0.08); 
+            border-color: var(--accent); 
+            color: var(--accent-soft);
         }
 
         #online-list div { font-size: 14px; color: #8bc34a; margin-bottom: 5px; }
-        .admin-badge { background: var(--admin); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
-        
-        input, textarea, select { width: 100%; background: #120a05; border: 1px solid var(--border); border-radius: 6px; padding: 10px; color: var(--text); margin-bottom: 15px; outline: none; }
+
+        footer { text-align: center; padding: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
     </style>
 </head>
 <body>
 
 <script>
+    // Создание улучшенных живых светлячков
     for(let i=0; i<20; i++) {
-        const f = document.createElement("div"); f.className = "firefly";
-        const size = Math.random() * 4 + 2 + "px"; f.style.width = size; f.style.height = size;
-        f.style.left = Math.random() * 100 + "vw"; f.style.animationDuration = Math.random() * 10 + 15 + "s";
-        f.style.animationDelay = Math.random() * 20 + "s"; document.body.appendChild(f);
+        const f = document.createElement("div");
+        f.className = "firefly";
+        const size = Math.random() * 4 + 2 + "px"; 
+        f.style.width = size;
+        f.style.height = size;
+        f.style.left = Math.random() * 100 + "vw";
+        f.style.animationDuration = Math.random() * 10 + 15 + "s"; // Медленнее и разнее
+        f.style.animationDelay = Math.random() * 20 + "s";
+        document.body.appendChild(f);
     }
 </script>
 
 <header>
-    <h1>🦊 FoxRole</h1>
+    <h1>
+        <svg class="fox-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l4 2v6l6 3 6-3V9l4-2z"/></svg>
+        FoxRole
+    </h1>
     <nav>
         <button onclick="openPage('home')">Главная</button>
         <button onclick="openPage('lore')">Мир</button>
@@ -132,21 +219,15 @@
 
 <div class="layout">
     <aside>
-        <button onclick="openPage('home')"><span>🏠</span> Главная</button>
-        <button onclick="openPage('characters')"><span>🎭</span> Персонажи</button>
-        <button onclick="openPage('editor')"><span>✏️</span> Новая анкетa</button>
-        <button onclick="openPage('lore')"><span>📜</span> Локации</button>
-        <button onclick="openPage('profile')"><span>👤</span> Профиль</button>
-
-        <div id="admin-menu" style="display:none; margin-top: 20px; border-top: 1px solid var(--admin); padding-top: 15px;">
-            <p style="color:var(--admin); font-size: 11px; font-weight: bold;">ХРАНИТЕЛЬ</p>
-            <button onclick="clearCurrentChat()" style="color:var(--admin)">🧹 Очистить чат</button>
-            <button onclick="toggleFreeze()" id="freeze-btn" style="color:#90caf9">❄️ Заморозить</button>
-        </div>
+        <button onclick="openPage('home')">🦊 Главная</button>
+        <button onclick="openPage('characters')">🎭 Персонажи</button>
+        <button onclick="openPage('editor')">✏️ Новая анкета</button>
+        <button onclick="openPage('lore')">📜 Локации</button>
+        <button onclick="openPage('profile')">👤 Профиль</button>
 
         <div style="margin-top: 30px; padding: 10px; border-top: 1px solid var(--border);">
-            <h4 style="color: var(--accent); font-size: 11px;">В ЛЕСУ:</h4>
-            <div id="online-list"></div>
+            <h4 style="color: var(--accent); font-size: 11px; text-transform: uppercase;">Сейчас в лесу:</h4>
+            <div id="online-list">Тишина...</div>
         </div>
     </aside>
 
@@ -154,63 +235,77 @@
         <section id="home" class="active">
             <div class="card">
                 <h2>Добро пожаловать в Листвейн</h2>
-                <p>Мир вечных сумерек и лисьих масок.</p>
+                <p>Мир вечных сумерек, где каждый шорох имеет значение. Выберите свою маску и начните историю.</p>
                 <button class="btn" onclick="openPage('lore')">Отправиться в путь</button>
             </div>
         </section>
 
         <section id="profile">
             <div class="card" id="auth-form">
-                <h2>Вход</h2>
-                <input id="auth_user" placeholder="Логин">
-                <input type="password" id="auth_pass" placeholder="Пароль">
-                <button class="btn" onclick="login()">Войти</button>
+                <h2>Вход в аккаунт</h2>
+                <label>Имя игрока</label>
+                <input id="auth_user" placeholder="Ваш ник">
+                <label>Пароль</label>
+                <input type="password" id="auth_pass" placeholder="****">
+                <button class="btn" onclick="login()">Войти / Создать</button>
             </div>
+            
             <div class="card" id="user-info" style="display:none">
-                <h2>Привет, <span id="display-username"></span>! <span id="admin-tag" class="admin-badge" style="display:none">ХРАНИТЕЛЬ</span></h2>
-                <button class="btn-secondary" onclick="logout()">Выйти</button>
+                <h2>Привет, <span id="display-username"></span>!</h2>
+                <button class="btn-secondary" onclick="logout()">Выйти из игры</button>
+
                 <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
                     <h3>📓 Личный дневник</h3>
-                    <textarea id="diary-input" placeholder="Ваши сокровенные мысли..."></textarea>
+                    <p style="font-size: 12px; color: var(--muted);">Эти записи видишь только ты.</p>
+                    <textarea id="diary-input" placeholder="О чем ты думаешь сегодня?"></textarea>
                     <button class="btn" onclick="addDiaryNote()">Записать</button>
-                    <div id="diary-notes" style="margin-top: 15px;"></div>
+                    <div id="diary-notes" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
                 </div>
             </div>
         </section>
 
-        <section id="characters"><h2>Жители леса</h2><div class="grid" id="characters-grid"></div></section>
+        <section id="characters">
+            <h2>Жители ночного леса</h2>
+            <div class="grid" id="characters-grid"></div>
+        </section>
+
         <section id="editor">
             <div class="card">
-                <h2>Новая маска</h2>
-                <input id="c_name" placeholder="Имя">
-                <input id="c_race" placeholder="Вид">
-                <textarea id="c_story" placeholder="История..."></textarea>
-                <button class="btn" onclick="saveCharacter()">Создать</button>
+                <h2>Создание новой маски</h2>
+                <label>Имя персонажа</label>
+                <input id="c_name" placeholder="Как зовут лиса?">
+                <label>Вид / Тип магии</label>
+                <input id="c_race" placeholder="Напр. Огненный хвост">
+                <label>Краткая биография</label>
+                <textarea id="c_story" placeholder="Откуда он пришел..."></textarea>
+                <button class="btn" onclick="saveCharacter()">Сохранить анкету</button>
             </div>
         </section>
-        <section id="lore"><h2>Локации</h2><div id="lore-content"></div></section>
+
+        <section id="lore">
+            <h2>Карта мира</h2>
+            <div id="lore-content">Загрузка свитков...</div>
+        </section>
 
         <section id="chat-room">
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h2 id="chat-title" style="margin:0; color: var(--accent);">Локация</h2>
+                    <h2 id="chat-title" style="margin:0;">Загрузка...</h2>
                     <button class="btn-secondary" onclick="openPage('lore')">← Уйти</button>
                 </div>
-                <div style="position: relative;">
-                    <div id="chat-messages"></div>
-                    <div id="freeze-overlay" class="frozen-overlay">❄️ Чат заморожен Хранителем...</div>
-                </div>
-                <div id="chat-controls" style="margin-top: 15px;">
-                    <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 10px; margin-bottom: 10px;">
-                        <select id="chat-char-select" style="margin:0;"><option value="">Без маски</option></select>
-                        <div id="gm-toggle-container" style="display:none; align-items:center; gap:5px; background: rgba(255,140,50,0.1); padding: 0 10px; border-radius: 6px; border: 1px solid var(--border);">
-                            <input type="checkbox" id="gm-mode" style="width:auto; margin:0;">
-                            <label for="gm-mode" style="margin:0; color:var(--accent); font-size: 12px; cursor:pointer;">ГОЛОС МИРА</label>
+                <div id="chat-messages" style="height: 380px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label>ВЫБРАТЬ МАСКУ ПЕРСОНАЖА:</label>
+                            <select id="chat-char-select" style="margin:0;"><option value="">Без маски (Игрок)</option></select>
                         </div>
-                        <button class="btn-secondary" onclick="sendMessage(true)">🎲 Кубик</button>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button class="btn-secondary" onclick="sendMessage(true)" title="Бросить кубик d20">🎲 Кубик</button>
+                        </div>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input id="chat-input" placeholder="Напишите сообщение..." style="margin:0;" onkeypress="if(event.key==='Enter') sendMessage(false)">
+                        <input id="chat-input" placeholder="Напишите действие или фразу..." style="margin:0;" onkeypress="if(event.key==='Enter') sendMessage(false)">
                         <button class="btn" onclick="sendMessage(false)">Отправить</button>
                     </div>
                 </div>
@@ -219,50 +314,23 @@
     </main>
 </div>
 
-<script>
-const BASE_URL = "https://foxrole.onrender.com";
-const ADMIN_LOGIN = "Fox01";
-let curLoc = "";
-let isFrozen = false;
+<footer>FoxRole • Night RP 2025 🦊</footer>
 
+<script>
 function openPage(id) {
     document.querySelectorAll("main section").forEach(s => s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
     if (id === 'characters') loadCharacters();
     if (id === 'lore') loadLore();
-    if (id === 'chat-room') updateChatMasks();
     if (id === 'profile') loadDiary();
-}
-
-function clearCurrentChat() {
-    if(!confirm(`Хранитель, очистить историю в "${curLoc}"?`)) return;
-    fetch(`${BASE_URL}/api/chat/clear`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location: curLoc, adminName: localStorage.getItem("foxUser") })
-    }).then(() => loadMessages());
-}
-
-function toggleFreeze() {
-    isFrozen = !isFrozen;
-    document.getElementById("freeze-btn").innerText = isFrozen ? "🔥 Разморозить" : "❄️ Заморозить";
-    document.getElementById("freeze-overlay").style.display = isFrozen ? "flex" : "none";
-    const controls = document.getElementById("chat-controls");
-    controls.style.opacity = isFrozen ? "0.3" : "1";
-    controls.style.pointerEvents = isFrozen ? "none" : "all";
-}
-
-function deleteMsg(id) {
-    if(!confirm("Заменить сообщение заглушкой?")) return;
-    fetch(`${BASE_URL}/api/chat/delete`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, adminName: localStorage.getItem("foxUser") })
-    }).then(() => loadMessages());
+    if (id === 'chat-room') updateChatMasks();
 }
 
 function login() {
     const user = document.getElementById('auth_user').value;
     const pass = document.getElementById('auth_pass').value;
-    fetch(`${BASE_URL}/api/auth/login`, {
+    if(!user || !pass) return alert("Заполните поля!");
+    fetch("http://localhost:3000/api/auth/login", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: user, password: pass })
     }).then(res => res.json()).then(data => {
@@ -277,44 +345,44 @@ function showProfile() {
         document.getElementById("auth-form").style.display = "none";
         document.getElementById("user-info").style.display = "block";
         document.getElementById("display-username").innerText = user;
-        if(user === ADMIN_LOGIN) {
-            document.getElementById("admin-tag").style.display = "inline-block";
-            document.getElementById("admin-menu").style.display = "block";
-            document.getElementById("gm-toggle-container").style.display = "flex";
-        }
+        loadDiary();
     }
 }
 
+function logout() { localStorage.removeItem("foxUser"); location.reload(); }
+
 function updateOnlineStatus() {
     const user = localStorage.getItem("foxUser");
-    if (user) fetch(`${BASE_URL}/api/features/ping`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: user }) });
-    fetch(`${BASE_URL}/api/features/online`).then(res => res.json()).then(list => {
-        document.getElementById("online-list").innerHTML = list.map(u => `<div>● ${u === ADMIN_LOGIN ? u + ' 👑' : u}</div>`).join('');
+    if (user) fetch("http://localhost:3000/api/features/ping", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: user }) });
+    fetch("http://localhost:3000/api/features/online").then(res => res.json()).then(list => {
+        document.getElementById("online-list").innerHTML = list.length > 0 ? list.map(u => `<div>● ${u}</div>`).join('') : "Тишина...";
     });
 }
 
 function saveCharacter() {
-    const data = { name: document.getElementById('c_name').value, race: document.getElementById('c_race').value, story: document.getElementById('c_story').value, owner: localStorage.getItem("foxUser") };
-    fetch(`${BASE_URL}/api/characters/save`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).then(() => openPage('characters'));
+    const charData = { name: document.getElementById('c_name').value, race: document.getElementById('c_race').value, story: document.getElementById('c_story').value, owner: localStorage.getItem("foxUser") || "Аноним" };
+    fetch("http://localhost:3000/api/characters/save", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(charData) }).then(() => { alert("Анкета сохранена!"); openPage('characters'); });
 }
 
 function loadCharacters() {
-    fetch(`${BASE_URL}/api/characters`).then(res => res.json()).then(data => {
-        document.getElementById("characters-grid").innerHTML = data.map(char => `<div class="card"><h3>🦊 ${char.name}</h3><small>${char.race}</small><p>${char.story}</p></div>`).join('');
+    fetch("http://localhost:3000/api/characters").then(res => res.json()).then(data => {
+        document.getElementById("characters-grid").innerHTML = data.map(char => `<div class="card"><h3 style="color:var(--accent); margin-bottom:5px;">🦊 ${char.name}</h3><small>${char.race}</small><p style="font-size:13px; margin-top:10px;">${char.story}</p><div style="font-size:10px; color:var(--muted); margin-top:10px;">Игрок: ${char.owner}</div></div>`).join('');
     });
 }
 
 function updateChatMasks() {
     const user = localStorage.getItem("foxUser");
-    fetch(`${BASE_URL}/api/characters`).then(res => res.json()).then(data => {
+    if(!user) return;
+    fetch("http://localhost:3000/api/characters").then(res => res.json()).then(data => {
         const myChars = data.filter(c => c.owner === user);
-        document.getElementById("chat-char-select").innerHTML = '<option value="">Без маски</option>' + myChars.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        document.getElementById("chat-char-select").innerHTML = '<option value="">Без маски (Игрок)</option>' + myChars.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
     });
 }
 
+let curLoc = "";
 function loadLore() {
-    fetch(`${BASE_URL}/api/lore`).then(res => res.json()).then(data => {
-        document.getElementById("lore-content").innerHTML = `<div class="grid">${data.locations.map(loc => `<div class="card" onclick="enterChat('${loc.name}')" style="cursor:pointer"><h3>${loc.image} ${loc.name}</h3><p>${loc.description}</p></div>`).join('')}</div>`;
+    fetch("http://localhost:3000/api/lore").then(res => res.json()).then(data => {
+        document.getElementById("lore-content").innerHTML = `<p>${data.history || "Древний лес..."}</p><div class="grid">${data.locations.map(loc => `<div class="card" style="cursor:pointer; border-left:4px solid var(--accent);" onclick="enterChat('${loc.name}')"><h3>${loc.image} ${loc.name}</h3><p>${loc.description}</p><small style="color:var(--accent)">Войти в локацию →</small></div>`).join('')}</div>`;
     });
 }
 
@@ -322,59 +390,38 @@ function enterChat(name) { curLoc = name; document.getElementById("chat-title").
 
 function loadMessages() {
     if(!curLoc) return;
-    const currentUser = localStorage.getItem("foxUser");
-    fetch(`${BASE_URL}/api/chat/${curLoc}`).then(res => res.json()).then(msgs => {
+    fetch(`http://localhost:3000/api/chat/${curLoc}`).then(res => res.json()).then(msgs => {
         const box = document.getElementById("chat-messages");
-        box.innerHTML = msgs.map(m => {
-            const isDel = m.text.includes("Сообщение удалено");
-            const gmClass = m.isGM ? 'msg-gm' : '';
-            const sysClass = m.isSystem ? 'msg-system' : '';
-            return `
-            <div class="msg ${gmClass} ${sysClass} ${m.isDice?'msg-dice':''}" style="${isDel?'opacity:0.5':''}">
-                <div class="msg-meta">
-                    <div style="display:flex; align-items:center;">
-                        ${m.isGM ? '<span class="gm-label">Голос Мира</span>' : `<span style="color:var(--muted)">${m.user}</span>`}
-                        ${m.character ? ` <span style="color:var(--muted); margin: 0 5px;">»</span> <span class="msg-char">${m.character}</span>` : ''}
-                        ${(currentUser === ADMIN_LOGIN && !isDel && !m.isSystem) ? `<button class="btn-admin" onclick="deleteMsg('${m.id}')">×</button>` : ''}
-                    </div>
-                    <span style="opacity:0.5; font-size:10px;">${m.time}</span>
-                </div>
-                <div class="msg-text" style="${isDel?'font-style:italic':''}">${m.text}</div>
-            </div>`;
-        }).join('');
+        box.innerHTML = msgs.map(m => `<div class="msg ${m.isDice ? 'msg-dice' : ''}"><div class="msg-meta"><div><span class="msg-user">${m.user}</span>${m.character ? ` <span style="color:var(--muted)">»</span> <span class="msg-char">${m.character}</span>` : ''}</div><span style="color:var(--muted)">${m.time}</span></div><div>${m.text}</div></div>`).join('');
         box.scrollTop = box.scrollHeight;
     });
 }
 
 function sendMessage(isDice) {
-    if(isFrozen) return;
     const text = document.getElementById("chat-input").value;
     const char = document.getElementById("chat-char-select").value;
-    const gmMode = document.getElementById("gm-mode") ? document.getElementById("gm-mode").checked : false;
+    const user = localStorage.getItem("foxUser") || "Аноним";
     if(!isDice && !text) return;
-    fetch(`${BASE_URL}/api/chat/send`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ location: curLoc, user: localStorage.getItem("foxUser"), text, character: char, isDice, isGM: gmMode })
-    }).then(() => { 
-        document.getElementById("chat-input").value = ""; 
-        if(document.getElementById("gm-mode")) document.getElementById("gm-mode").checked = false;
-        loadMessages(); 
-    });
+    fetch("http://localhost:3000/api/chat/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ location: curLoc, user, text, character: char, isDice }) }).then(() => { document.getElementById("chat-input").value = ""; loadMessages(); });
 }
 
 function loadDiary() {
     const user = localStorage.getItem("foxUser");
-    fetch(`${BASE_URL}/api/features/diary/${user}`).then(res => res.json()).then(notes => {
-        document.getElementById("diary-notes").innerHTML = notes.reverse().map(n => `<div style="background:rgba(0,0,0,0.2); padding:10px; margin-bottom:5px; border-radius:5px;"><small>${n.date}</small><div>${n.text}</div></div>`).join('');
+    if (!user) return;
+    fetch(`http://localhost:3000/api/features/diary/${user}`).then(res => res.json()).then(notes => {
+        document.getElementById("diary-notes").innerHTML = notes.reverse().map(n => `<div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; border-left: 2px solid var(--muted);"><small style="color: var(--accent)">${n.date}</small><div style="margin-top: 5px;">${n.text}</div></div>`).join('');
     });
 }
 
 function addDiaryNote() {
     const text = document.getElementById("diary-input").value;
-    fetch(`${BASE_URL}/api/features/diary/add`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: localStorage.getItem("foxUser"), text }) }).then(() => { document.getElementById("diary-input").value = ""; loadDiary(); });
+    const user = localStorage.getItem("foxUser");
+    if (!text || !user) return;
+    fetch("http://localhost:3000/api/features/diary/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: user, text }) }).then(() => { document.getElementById("diary-input").value = ""; loadDiary(); });
 }
 
-showProfile(); updateOnlineStatus();
+showProfile();
+updateOnlineStatus();
 setInterval(updateOnlineStatus, 10000);
 setInterval(() => { if (curLoc && document.getElementById("chat-room").classList.contains("active")) loadMessages(); }, 3000);
 </script>
