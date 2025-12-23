@@ -1,127 +1,123 @@
 const express = require("express");
+const router = express.Router();
 const fs = require("fs");
 const path = require("path");
-const router = express.Router();
 
-const FILE = path.join(__dirname, "../data/messages.json");
-const ADMIN_LOGIN = "Fox01";
+// Пути к данным
+const CHARS_PATH = path.join(__dirname, "../data/characters.json");
+const MESSAGES_PATH = path.join(__dirname, "../data/messages.json");
 
-// Вспомогательная функция для чтения сообщений
-const getAllMessages = () => {
+// --- СИСТЕМА УРОВНЕЙ И ТИТУЛОВ ---
+
+/**
+ * Определяет титул персонажа на основе его уровня
+ */
+function getTitle(level) {
+    if (level >= 30) return "🔥 Божество Листвейна";
+    if (level >= 20) return "🏆 Легендарный Герой";
+    if (level >= 15) return "⚔️ Мастер Клинка";
+    if (level >= 10) return "🌟 Искатель Приключений";
+    if (level >= 5)  return "🍃 Путешественник";
+    return "🐾 Новичок";
+}
+
+/**
+ * Рассчитывает, сколько опыта нужно для следующего уровня
+ * Уровни становятся сложнее: 100, 250, 450, 700...
+ */
+function calculateMaxExp(level) {
+    return level * 100 + (level - 1) * 50;
+}
+
+// --- РОУТЫ ЧАТА ---
+
+// Получение всех сообщений
+router.get("/messages", (req, res) => {
     try {
-        if (!fs.existsSync(FILE)) {
-            fs.writeFileSync(FILE, JSON.stringify([]));
-            return [];
-        }
-        const data = fs.readFileSync(FILE, "utf8");
-        return JSON.parse(data || "[]");
+        if (!fs.existsSync(MESSAGES_PATH)) return res.json([]);
+        const messages = JSON.parse(fs.readFileSync(MESSAGES_PATH, "utf8"));
+        res.json(messages);
     } catch (err) {
-        console.error("Ошибка чтения сообщений:", err);
-        return [];
+        res.status(500).json({ error: "Ошибка загрузки чата" });
     }
-};
-
-// 1. ПОЛУЧЕНИЕ СООБЩЕНИЙ ЛОКАЦИИ
-router.get("/:location", (req, res) => {
-    const allMessages = getAllMessages();
-    const filtered = allMessages.filter(m => m.location === req.params.location);
-    res.json(filtered);
 });
 
-// 2. ОТПРАВКА СООБЩЕНИЯ (С поддержкой GM-mode и Dice)
+// Отправка сообщения и начисление опыта
 router.post("/send", (req, res) => {
+    const { charName, text, location } = req.body;
+
+    if (!charName || !text) {
+        return res.status(400).json({ error: "Не все поля заполнены" });
+    }
+
     try {
-        const { location, user, text, character, isDice, isGM } = req.body;
-        const allMessages = getAllMessages();
+        // 1. Загружаем персонажей для обновления опыта
+        let characters = [];
+        if (fs.existsSync(CHARS_PATH)) {
+            characters = JSON.parse(fs.readFileSync(CHARS_PATH, "utf8"));
+        }
 
-        if (!text && !isDice) return res.status(400).json({ error: "Пустое сообщение" });
+        let charIndex = characters.findIndex(c => c.name === charName);
+        let levelUpOccurred = false;
+        let currentTitle = "Новичок";
 
-        let finalMessage = text;
-        let senderName = user;
-        let isMasterAction = false;
+        if (charIndex !== -1) {
+            let char = characters[charIndex];
 
-        // ЛОГИКА ГОЛОСА МИРА (Только для Fox01)
-        if (isGM && user === ADMIN_LOGIN) {
-            senderName = "✨ ЛЕГЕНДА ЛЕСА";
-            isMasterAction = true;
-        } 
-        // ЛОГИКА КУБИКА
-        else if (isDice) {
-            const roll = Math.floor(Math.random() * 20) + 1;
-            finalMessage = `🎲 Бросок d20: **${roll}**`;
+            // Начисляем опыт: 10 за сообщение + бонус за длину текста (до 5)
+            const expGain = 10 + Math.min(Math.floor(text.length / 20), 5);
+            char.exp = (char.exp || 0) + expGain;
+
+            // Если maxExp не задан (старый персонаж), задаем его
+            if (!char.maxExp) char.maxExp = calculateMaxExp(char.level || 1);
+
+            // Проверка повышения уровня (цикл на случай, если опыта пришло ОЧЕНЬ много)
+            while (char.exp >= char.maxExp) {
+                char.level = (char.level || 1) + 1;
+                char.exp -= char.maxExp;
+                char.maxExp = calculateMaxExp(char.level);
+                levelUpOccurred = true;
+            }
+
+            // Обновляем титул
+            char.title = getTitle(char.level);
+            currentTitle = char.title;
+
+            // Сохраняем обновленного персонажа
+            characters[charIndex] = char;
+            fs.writeFileSync(CHARS_PATH, JSON.stringify(characters, null, 2));
+        }
+
+        // 2. Сохраняем само сообщение
+        let messages = [];
+        if (fs.existsSync(MESSAGES_PATH)) {
+            messages = JSON.parse(fs.readFileSync(MESSAGES_PATH, "utf8"));
         }
 
         const newMessage = {
-            id: Date.now() + "_" + Math.random().toString(36).substr(2, 5),
-            location,
-            user: senderName,
-            character: isMasterAction ? null : (character || null), // GM не использует маску
-            text: finalMessage,
-            isDice: isDice || false,
-            isGM: isMasterAction, // Флаг для золотого стиля на фронтенде
-            isSystem: false,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            id: Date.now(),
+            charName,
+            title: currentTitle, // Сохраняем титул в сообщении
+            text,
+            location: location || "Неизвестно",
+            timestamp: new Date().toLocaleTimeString()
         };
 
-        allMessages.push(newMessage);
+        messages.push(newMessage);
+        // Храним последние 100 сообщений
+        if (messages.length > 100) messages.shift();
         
-        // Ограничение истории для производительности
-        if (allMessages.length > 1000) allMessages.shift();
+        fs.writeFileSync(MESSAGES_PATH, JSON.stringify(messages, null, 2));
 
-        fs.writeFileSync(FILE, JSON.stringify(allMessages, null, 2));
-        res.json({ status: "ok", message: newMessage });
-    } catch (err) {
-        res.status(500).json({ error: "Ошибка отправки" });
-    }
-});
-
-// 3. МОДЕРАЦИЯ: ЗАМЕНА СООБЩЕНИЯ ЗАГЛУШКОЙ
-router.post("/delete", (req, res) => {
-    try {
-        const { id, adminName } = req.body;
-        if (adminName !== ADMIN_LOGIN) return res.status(403).json({ error: "Доступ запрещен" });
-
-        let allMessages = getAllMessages();
-        const msgIndex = allMessages.findIndex(m => m.id === id);
-
-        if (msgIndex !== -1) {
-            allMessages[msgIndex].text = `🛑 Сообщение удалено модератором комнаты **${adminName}**`;
-            allMessages[msgIndex].isDeleted = true;
-            
-            fs.writeFileSync(FILE, JSON.stringify(allMessages, null, 2));
-            res.json({ status: "ok" });
-        } else {
-            res.status(404).json({ error: "Сообщение не найдено" });
-        }
-    } catch (err) {
-        res.status(500).json({ error: "Ошибка модерации" });
-    }
-});
-
-// 4. ДИСЦИПЛИНА: ПОЛНАЯ ОЧИСТКА ЛОКАЦИИ
-router.post("/clear", (req, res) => {
-    try {
-        const { location, adminName } = req.body;
-        if (adminName !== ADMIN_LOGIN) return res.status(403).json({ error: "Нет прав" });
-
-        let allMessages = getAllMessages();
-        
-        // Фильтруем, удаляя сообщения текущей локации
-        const filteredMessages = allMessages.filter(m => m.location !== location);
-        
-        // Добавляем системную отметку об очистке
-        filteredMessages.push({
-            id: "sys_" + Date.now(),
-            location: location,
-            user: "СИСТЕМА",
-            text: `✨ Хранитель **${adminName}** очистил чат. Листва этого места снова чиста.`,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            isSystem: true
+        // Отправляем ответ фронтенду
+        res.json({ 
+            success: true, 
+            levelUp: levelUpOccurred,
+            newLevel: characters[charIndex]?.level
         });
 
-        fs.writeFileSync(FILE, JSON.stringify(filteredMessages, null, 2));
-        res.json({ status: "ok" });
     } catch (err) {
+        console.error("Ошибка чата:", err);
         res.status(500).json({ error: "Ошибка сервера" });
     }
 });
