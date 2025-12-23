@@ -1,0 +1,15 @@
+[
+  {
+    "username": "Fox01",
+    "password": "1090228",
+    "id": 1766490435973,
+    "lastSeen": 1766497935116
+  },
+  {
+    "username": "Fox02",
+    "password": "1090228",
+    "role": "user",
+    "created_at": "2025-12-23T12:43:13.372Z",
+    "lastSeen": 1766493798578
+  }
+]
